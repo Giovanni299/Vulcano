@@ -53,7 +53,7 @@ func main() {
 	flag.Parse()
 
 	if *initDb {
-		if err := initializeDb(db); err != nil {
+		if err := database.initializeDb(db); err != nil {
 			log.Fatalf("Error initializing database: %v\n", err)
 		}
 	}
