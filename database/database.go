@@ -1,41 +1,55 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"strings"
 
-func initializeDb(db *sql.DB) error {
-	const weather = `
-		CREATE TABLE IF NOT EXISTS "WEATHER" (
-			"IdWeather" int,
-			"Weather" varchar(10),
-			PRIMARY KEY ("IdWeather")
-	  	);`
+	planet "github.com/Giovanni299/Vulcano/planets"
+)
 
-	const days = `
-		CREATE TABLE IF NOT EXISTS "DAYS" (
-			"IdDay" int,
-			"IdWeather" int,
-			PRIMARY KEY ("IdDay"),
-			CONSTRAINT "fk_Weather"
-			FOREIGN KEY("IdWeather") 
-	  		REFERENCES "WEATHER"("IdWeather")
-	  	);`
+const (
+	weather = `
+		CREATE TABLE IF NOT EXISTS weather(
+			idWeather int, weather varchar(15), value varchar(250),
+			PRIMARY KEY (idWeather)
+		  );`
 
-	const coordinates = `
-		CREATE TABLE IF NOT EXISTS "COORDINATES" (
-			"IdCoordinate" int,
-			"IdDay" int,
-			"xF" float4,
-			"yF" float4,
-			"xB" float4,
-			"yB" float4,
-			"xV" float4,
-			"yV" float4,
-			PRIMARY KEY ("IdCoordinate"),
+	days = `
+		  CREATE TABLE IF NOT EXISTS days (
+			  idDay int, idWeather int, 
+			  PRIMARY KEY (idDay),
+			  CONSTRAINT "fk_Weather"
+			  FOREIGN KEY(idWeather) 
+				REFERENCES weather(idWeather)
+			);`
+
+	coordinates = `
+		CREATE TABLE IF NOT EXISTS coordinates (
+			idCoordinate serial primary key, idDay int, xF float4, yF float4,
+			xB float4, yB float4, xV float4, yV float4,
 			CONSTRAINT "fk_Days"
-			FOREIGN KEY("IdDay") 
-	  		REFERENCES "DAYS"("IdDay")
+			FOREIGN KEY(idDay) 
+	  		REFERENCES days(idDay)
 	  );`
 
+	weatherType = `INSERT INTO weather (idWeather , weather, value) 
+	VALUES
+		(0, 'Sequia', $1),
+		(1, 'Lluvia', $2),
+		(2, 'Lluvia Intensa', $3),
+		(3, 'Optimo', $4),
+		(4, 'Ninguno', '--')  ON CONFLICT DO NOTHING;`
+
+	insertWeather     = `INSERT INTO days(idDay, idWeather) VALUES%s`
+	insertCoordinates = `INSERT INTO coordinates(idday, xb, yb, xf, yf, xv, yv) VALUES%s`
+	selectWeather     = `SELECT weather, value FROM weather LIMIT $1`
+	selectDay         = `SELECT idweather from days where idday = $1;`
+)
+
+//InitializeDb tables on DataBase.
+func InitializeDb(db *sql.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -54,13 +68,64 @@ func initializeDb(db *sql.DB) error {
 	return tx.Commit()
 }
 
-func seedDb(db *sql.DB) error {
-	const insertWeather = "INSERT INTO days(day, weather) VALUES($1, $2)"
-	const insertPlanet = "INSERT INTO planets(name) VALUES($1) RETURNING id"
-	const insertCoordinates = "INSERT INTO coordinates(day_id, planet_id, x, y) VALUES ($1, $2, $3, $4)"
+//GetData from DB.
+func GetData(db *sql.DB) ([]planet.WeatherResult, error) {
+	weatherResults := []planet.WeatherResult{}
+	rows, err := db.Query(selectWeather, 4)
+	if err != nil {
+		return nil, err
+	}
 
+	defer rows.Close()
+	var weather string
+	var value string
+	for rows.Next() {
+		err = rows.Scan(&weather, &value)
+		if err != nil {
+			return nil, err
+		}
+
+		weatherResults = append(weatherResults, planet.WeatherResult{Weather: weather, Value: value})
+	}
+
+	return weatherResults, err
+}
+
+//GetDay return weather od DB for a specific day.
+func GetDay(db *sql.DB, day int) (int, error) {
+	idweather := 0
+	err := db.QueryRow(selectDay, day).Scan(&idweather)
+	if err != nil {
+		log.Fatal("Failed to execute query: ", err)
+	}
+
+	return idweather, err
+}
+
+//InsertData in DB.
+func InsertData(db *sql.DB, value []string, arguments []interface{}, valueCoordinates []string, valueCoorArgs []interface{}, resultWeatherArgs []interface{}) error {
 	tx, err := db.Begin()
 	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(weatherType, resultWeatherArgs...)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	stmt := fmt.Sprintf(insertWeather, strings.Join(value, ","))
+	_, err = tx.Exec(stmt, arguments...)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	stmt = fmt.Sprintf(insertCoordinates, strings.Join(valueCoordinates, ","))
+	_, err = tx.Exec(stmt, valueCoorArgs...)
+	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
