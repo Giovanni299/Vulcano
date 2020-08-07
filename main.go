@@ -8,23 +8,24 @@ import (
 	"os"
 	"strconv"
 
-	planet "github.com/Giovanni299/Vulcano/planets"
+    _ "github.com/lib/pq"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
-
 	"github.com/Giovanni299/Vulcano/database"
 	"github.com/Giovanni299/Vulcano/weather"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	planet "github.com/Giovanni299/Vulcano/planets"
 )
 
 //WeatherService path weather.
 const WeatherService = "/weather"
 
+//WeatherService path weather information for a specific day.
 const DayService = "/clima"
 
 var (
 	db            *sql.DB
 	weatherResult []planet.WeatherResult
+
 	dbHost        string
 	dbUsername    string
 	dbName        string
@@ -32,36 +33,48 @@ var (
 	dbPassword    string
 )
 
-func init() {
+func init() {	
 	//Load .env file
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("Error loading .env file.")
 	}
 
-	dbHost = os.Getenv("dbHost")
-	dbUsername = os.Getenv("dbUsername")
-	dbPassword = os.Getenv("dbPassword")
-	dbName = os.Getenv("dbName")
-	dbPort = os.Getenv("dbPort")
+	dbHost = os.Getenv("DB_HOST")
+	dbUsername = os.Getenv("DB_USER")
+	dbPassword = os.Getenv("DB_PASSWORD")
+	dbName = os.Getenv("DB_NAME")
+	dbPort = os.Getenv("DB_PORT")
 }
 
 func main() {
 	var err error
-	pgConString := fmt.Sprintf("port=%s host=%s user=%s "+"password=%s dbname=%s sslmode=disable", dbPort, dbHost, dbUsername, dbPassword, dbName)
+
+	f, err := os.OpenFile("logfile.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer f.Close()
+	
+	log.SetOutput(f)
+	log.Println("Start API Vulcano")
+	log.Println("Host: " + dbHost + " DB: " + dbName)
+
+	pgConString := fmt.Sprintf("port=%s host=%s user=%s "+"password=%s dbname=%s sslmode=disable", dbPort, dbHost, dbUsername, dbPassword, dbName)	
 	db, err = sql.Open("postgres", pgConString)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	if err = db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 
+	log.Println("Connected BD")
 	if err = completedDataBase(); err != nil {
 		log.Fatalf("Error Completed Database: %v\n", err)
 	}
+	log.Println("Completed data to BD.")
 
-	println(weatherResult)
 	server := echo.New()
 	server.GET("/", index)
 	server.GET(WeatherService, weatherService)
