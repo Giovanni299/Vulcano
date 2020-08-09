@@ -52,7 +52,9 @@ lo cual retorna un mensaje JSON, con la información de número de periodos por
 http://3.23.87.74:8084/clima?dia=566
 
 ##### Despliegue
-Para realizar pruebas y ver el funcionamiento de la aplicación, esta fue desplegada en AWS en la URL http://3.23.87.74:8084
+Para realizar pruebas y ver el funcionamiento de la aplicación, esta fue desplegada en:
+* AWS en la URL http://3.23.87.74:8084
+* Google en la URL http://35.227.155.119:8084/
 
 Si se quiere desplegar la aplicación en un nuevo servidor hay que tener en cuenta lo siguiente:
 Es importante cambiar el valor de la llave **SERVER_IP** en el archivo **.env** por la IP del servidor donde va a correr la aplicación.
