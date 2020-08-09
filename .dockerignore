@@ -2,3 +2,5 @@ pkg/
 bin/
 github.com/
 golang.org/
+*.log
+*.exe

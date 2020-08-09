@@ -15,7 +15,7 @@ import (
 	"github.com/Giovanni299/Vulcano/weather"
 	planet "github.com/Giovanni299/Vulcano/planets"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	_ "github.com/Giovanni299/Vulcano/docs" 
+	docs "github.com/Giovanni299/Vulcano/docs" 
 )
 
 //WeatherService path weather.
@@ -33,6 +33,7 @@ var (
 	dbName        string
 	dbPort        string
 	dbPassword    string
+	serverIP 	  string
 )
 
 func init() {	
@@ -46,6 +47,7 @@ func init() {
 	dbPassword = os.Getenv("DB_PASSWORD")
 	dbName = os.Getenv("DB_NAME")
 	dbPort = os.Getenv("DB_PORT")
+	serverIP = os.Getenv("SERVER_IP")
 }
 
 // @title Sistema Solar
@@ -56,6 +58,7 @@ func init() {
 // @schemes http
 func main() {
 	var err error
+	docs.SwaggerInfo.Host = serverIP
 
 	f, err := os.OpenFile("logfile.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
 	if err != nil {
@@ -64,7 +67,8 @@ func main() {
 	defer f.Close()
 	
 	log.SetOutput(f)
-	log.Println("Start API Vulcano")
+	log.Println("Start API Vulcano")	
+	log.Println("Conneceted to server IP: " + serverIP)
 	log.Println("Host: " + dbHost + " DB: " + dbName)
 
 	pgConString := fmt.Sprintf("port=%s host=%s user=%s "+"password=%s dbname=%s sslmode=disable", dbPort, dbHost, dbUsername, dbPassword, dbName)	
@@ -115,12 +119,12 @@ func completedDataBase() error {
 func index(server echo.Context) (err error) {
 	result := `
 	<h1>SISTEMA SOLAR - MercadoLibre</h1>
-	<p>Puede dirigirse a la documentacion de la API en la siguiente URL:</p>
-	<a href="http://localhost:8084/swagger/index.html">Sistema Solar API swagger!</a>
-	<p>Para conocer los periodos de Sequia, Lluvia y condiciones optimas, puede dirigirse al siguiente link:</p>
-	<a href="http://localhost:8084/weather">Weather</a>
-	<p>Para consultar la información de un dia especifico, puede dirigirse al siguiente link, el cual por defecto tra la información para el dia 566:</p>
-	<a href="http://localhost:8084/clima?dia=566">Weather day</a>
+	<p>Puede dirigirse a la documentación de la API en la siguiente URL:</p>
+	<a href="http://`+serverIP+`/swagger/index.html">Sistema Solar API swagger!</a> 
+	<p>Para conocer los periodos de Sequia, Lluvia y condiciones óptimas, puede dirigirse al siguiente link:</p>
+	<a href="http://`+serverIP+`/weather">Weather</a>
+	<p>Para consultar la información de un dia específico, puede dirigirse al siguiente link, el cual por defecto trae la información para el día 566:</p>
+	<a href="http://`+serverIP+`/clima?dia=566">Weather day</a>
 	`
 	return server.HTML(http.StatusOK, result)
 }
