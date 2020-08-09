@@ -2,28 +2,28 @@
 
 ------------
 
-##Vulcano Project
+## Vulcano Project
 En una galaxia lejana, existen tres civilizaciones. Vulcanos, Ferengis y Betasoides. Cada civilización vive en paz en su respectivo planeta. Dominan la predicción del clima mediante un complejo sistema informático.
 
-####Premisas:
+#### Premisas:
 * El planeta Ferengi se desplaza con una velocidad angular de 1 grados/día en sentido horario. Su distancia con respecto al sol es de 500Km.
 * El planeta Betasoide se desplaza con una velocidad angular de 3 grados/día en sentido horario. Su distancia con respecto al sol es de 2000Km.
 * El planeta Vulcano se desplaza con una velocidad angular de 5 grados/día en sentido anti­horario, su distancia con respecto al sol es de 1000Km.
 * Todas las órbitas son circulares.
 
-####Condiciones Climáticas
+#### Condiciones Climáticas
 * Cuando los tres planetas y el sol están alineados entre sí, el sistema solar experimenta un período de sequía.
 * Cuando los tres planetas no están alineados, forman entre sí un triángulo, cuando el sol se encuentra dentro del triángulo, el sistema solar experimenta un período de lluvia, teniendo un pico de intensidad cuando el perímetro del triángulo está en su máximo.
 * Las condiciones óptimas de presión y temperatura se dan cuando los tres planetas están alineados entre sí pero no están alineados con el sol.
 
 [========]
-####Suposiciones
+#### Suposiciones
 * El planeta Ferengis que es el que se mueve más despacio, su año solar tiene una duración de 360 días y en base a este se van a calcular los 10 años.
 * El total de dias para los 10 años van desde el día 0 al día 3599
 * En el día 0 los 3 planetas están alineados con valor en la coordenada Y igual a 0.
 * Un periodo se considera como 1 o más días consecutivos con el mismo clima.
 
-####Aplicación
+#### Aplicación
 La aplicación fue desarrollada en *Golang*, realizando los cálculos del clima para los próximos 10 años y almacenando la información en una base de datos *Postgres*.
 ##### Base de datos
 >Las variables de entorno para realizar la conexión a Postgres se deben configurar en el archivo ***.env***, por defecto se configuran los siguientes valores:
