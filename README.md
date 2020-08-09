@@ -46,6 +46,7 @@ La API se realizó usando el framework [echo][1] de Golang y está expuesta en e
 
 2. Para consultar el número de periodos por clima en los 10 años, se debe agregar a la URL ***/weather***.
 http://3.23.87.74:8084/weather
+lo cual retorna un mensaje JSON, con la información de número de periodos por clima y un arreglo con los días de picos máximos de lluvia
 
 3. Para consultar el clima de un día especifico se debe agregar a la URL ***/clima?dia=566***, especificando el día a consultar, este debe ser un numero en el rango de 0 a 3599, por ejemplo para consultar el dia 566 la URL es:
 http://3.23.87.74:8084/clima?dia=566
