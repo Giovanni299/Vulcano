@@ -34,33 +34,41 @@ DB_NAME=fullstack_api
 DB_USER=postgres
 DB_PASSWORD=vulcano1
 DB_PORT=5432
-
-SERVER_IP=127.0.0.1:8084
 ```
 Se crearon 3 tablas para guardar la información:
-* **weather: ** se almacena la información de los climas que puede haber en los planetas.
-* **coordinates: ** se almacena la información de las coordenadas en (x,y) por día para cada planeta.
-* **days: ** se almacena la información del clima calculado para cada día.
+* **weather:** se almacena la información de los climas que puede haber en los planetas.
+* **coordinates:** se almacena la información de las coordenadas en (x,y) por día para cada planeta.
+* **days:** se almacena la información del clima calculado para cada día.
 
 ##### API
 La API se realizó usando el framework [echo][1] de Golang y está expuesta en el puerto 8084:
 1. Al ingresar a la URL http://3.23.87.74:8084 se muestra la información de la aplicación y las URL para consultar el número de periodos por clima o el clima para un día especifico.
+
 2. Para consultar el número de periodos por clima en los 10 años, se debe agregar a la URL ***/weather***.
 http://3.23.87.74:8084/weather
-3. Para consultar el clima de un día especifico se debe agregar a la URL ***/clima?dia=566***, especificando el día a consultar, este debe ser un numero en el rango de 0 a 3599.
+
+3. Para consultar el clima de un día especifico se debe agregar a la URL ***/clima?dia=566***, especificando el día a consultar, este debe ser un numero en el rango de 0 a 3599, por ejemplo para consultar el dia 566 la URL es:
 http://3.23.87.74:8084/clima?dia=566
 
 ##### Despliegue
-Es importante cambiar el valor de la llave **SERVER_IP** en el archivo **.env** por la Ip del servidor donde va a correr la aplicación.
+Para realizar pruebas y ver el funcionamiento de la aplicación, esta fue desplegada en AWS en la URL http://3.23.87.74:8084
+
+Si se quiere desplegar la aplicación en un nuevo servidor hay que tener en cuenta lo siguiente:
+Es importante cambiar el valor de la llave **SERVER_IP** en el archivo **.env** por la IP del servidor donde va a correr la aplicación.
+```
+SERVER_IP=127.0.0.1:8084
+```
+
 La imagen de la aplicación está en Docker Hub y se puede descargar con el siguiente comando:
 ```
 docker pull giovanni299/vulcano:latest
 ```
-la aplicación está desplegada en AWS en la URL http://3.23.87.74:8084
-Para desplegar la aplicación en un servidor, solo se necesita el archivo **.env** y **docker-compose.yml** y ejecutar el comando
+
+Para desplegar la aplicación en un servidor, solo se necesita haber modificado el archivo **.env**, haber descargado la imagen de la aplicación, el archivo **docker-compose.yml** y ejecutar el comando:
 ```
 docker-compose up -d
 ```
 
+lo cual por defecto despliega una base de datos Postgres en el puerto 5432 y la aplicación vulcano en el puerto 8084.
 
 [1]: https://echo.labstack.com/ "echo"
