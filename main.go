@@ -114,12 +114,12 @@ func completedDataBase() error {
 //Index API.
 func index(server echo.Context) (err error) {
 	result := `
-	<h1>SISTEMA SOLAR1 - MercadoLibre</h1>
+	<h1>SISTEMA SOLAR - MercadoLibre</h1>
 	<p>Puede dirigirse a la documentacion de la API en la siguiente URL:</p>
 	<a href="http://localhost:8084/swagger/index.html">Sistema Solar API swagger!</a>
-	<p>Para conocer los periodos de Sequia, Lluvia y condiciones optimas, debe realizarse de la siguiente manera:</p>
+	<p>Para conocer los periodos de Sequia, Lluvia y condiciones optimas, puede dirigirse al siguiente link:</p>
 	<a href="http://localhost:8084/weather">Weather</a>
-	<p>Para consultar la información de un dia especifico, debe realizarse de la siguiente manera:</p>
+	<p>Para consultar la información de un dia especifico, puede dirigirse al siguiente link, el cual por defecto tra la información para el dia 566:</p>
 	<a href="http://localhost:8084/clima?dia=566">Weather day</a>
 	`
 	return server.HTML(http.StatusOK, result)
