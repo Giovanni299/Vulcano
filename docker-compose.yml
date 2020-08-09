@@ -4,6 +4,8 @@ services:
     container_name: vulcano_app  
     image: giovanni299/vulcano:latest
     build: .
+    environment:
+        - SERVER_IP=${SERVER_IP} 
     ports: 
       - 8084:8084 
     restart: on-failure

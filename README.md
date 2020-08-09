@@ -34,6 +34,8 @@ DB_NAME=fullstack_api
 DB_USER=postgres
 DB_PASSWORD=vulcano1
 DB_PORT=5432
+
+SERVER_IP=127.0.0.1:8084
 ```
 Se crearon 3 tablas para guardar la información:
 * **weather: ** se almacena la información de los climas que puede haber en los planetas.
@@ -49,6 +51,7 @@ http://3.23.87.74:8084/weather
 http://3.23.87.74:8084/clima?dia=566
 
 ##### Despliegue
+Es importante cambiar el valor de la llave **SERVER_IP** en el archivo **.env** por la Ip del servidor donde va a correr la aplicación.
 La imagen de la aplicación está en Docker Hub y se puede descargar con el siguiente comando:
 ```
 docker pull giovanni299/vulcano:latest
