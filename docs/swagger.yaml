@@ -1,0 +1,55 @@
+basePath: /
+definitions:
+  planet.WeatherResult:
+    properties:
+      value:
+        type: string
+      weather:
+        type: string
+    type: object
+  weather.DayResult:
+    properties:
+      clima:
+        type: string
+      dia:
+        type: integer
+    type: object
+host: localhost:8084
+info:
+  contact: {}
+  description: API to get the weather of the planets in the futures 10 years.
+  title: Sistema Solar
+  version: "1.0"
+paths:
+  /clima:
+    get:
+      parameters:
+      - description: Especific day
+        in: query
+        name: dia
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/weather.DayResult'
+        "400": {}
+      summary: return the result of the weather for a specific day.
+  /weather:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/planet.WeatherResult'
+            type: array
+        "400": {}
+      summary: return results of weather in JSON format.
+schemes:
+- http
+swagger: "2.0"

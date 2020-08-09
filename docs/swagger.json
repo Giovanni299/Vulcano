@@ -1,0 +1,85 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API to get the weather of the planets in the futures 10 years.",
+        "title": "Sistema Solar",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8084",
+    "basePath": "/",
+    "paths": {
+        "/clima": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return the result of the weather for a specific day.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Especific day",
+                        "name": "dia",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/weather.DayResult"
+                        }
+                    },
+                    "400": {}
+                }
+            }
+        },
+        "/weather": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return results of weather in JSON format.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/planet.WeatherResult"
+                            }
+                        }
+                    },
+                    "400": {}
+                }
+            }
+        }
+    },
+    "definitions": {
+        "planet.WeatherResult": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                },
+                "weather": {
+                    "type": "string"
+                }
+            }
+        },
+        "weather.DayResult": {
+            "type": "object",
+            "properties": {
+                "clima": {
+                    "type": "string"
+                },
+                "dia": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

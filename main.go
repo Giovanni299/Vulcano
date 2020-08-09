@@ -14,6 +14,8 @@ import (
 	"github.com/Giovanni299/Vulcano/database"
 	"github.com/Giovanni299/Vulcano/weather"
 	planet "github.com/Giovanni299/Vulcano/planets"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "github.com/Giovanni299/Vulcano/docs" 
 )
 
 //WeatherService path weather.
@@ -46,6 +48,12 @@ func init() {
 	dbPort = os.Getenv("DB_PORT")
 }
 
+// @title Sistema Solar
+// @description API to get the weather of the planets in the futures 10 years.
+// @version 1.0
+// @host localhost:8084
+// @BasePath /
+// @schemes http
 func main() {
 	var err error
 
@@ -73,13 +81,13 @@ func main() {
 	if err = completedDataBase(); err != nil {
 		log.Fatalf("Error Completed Database: %v\n", err)
 	}
-	log.Println("Completed data to BD.")
 
+	log.Println("Completed data to BD.")
 	server := echo.New()
 	server.GET("/", index)
 	server.GET(WeatherService, weatherService)
 	server.GET(DayService, dayService)
-	//server.GET("/swagger/*", echoSwagger.WrapHandler)
+	server.GET("/swagger/*", echoSwagger.WrapHandler)
 	server.Logger.Fatal(server.Start(":8084"))
 }
 
@@ -106,18 +114,23 @@ func completedDataBase() error {
 //Index API.
 func index(server echo.Context) (err error) {
 	result := `
-	<h1>SISTEMA SOLAR - MercadoLibre</h1>
+	<h1>SISTEMA SOLAR1 - MercadoLibre</h1>
 	<p>Puede dirigirse a la documentacion de la API en la siguiente URL:</p>
 	<a href="http://localhost:8084/swagger/index.html">Sistema Solar API swagger!</a>
 	<p>Para conocer los periodos de Sequia, Lluvia y condiciones optimas, debe realizarse de la siguiente manera:</p>
-	<i>http://localhost:8084/weather</i>	
+	<a href="http://localhost:8084/weather">Weather</a>
 	<p>Para consultar la información de un dia especifico, debe realizarse de la siguiente manera:</p>
-	<i>http://localhost:8084/clima?dia=566</i>
+	<a href="http://localhost:8084/clima?dia=566">Weather day</a>
 	`
 	return server.HTML(http.StatusOK, result)
 }
 
-//weatherService return results of weather in JSON format.
+//weatherService godoc
+// @Summary return results of weather in JSON format.
+// @Produce json
+// @Success 200 {object} []planet.WeatherResult
+// @Failure 400 
+// @Router /weather [get]
 func weatherService(server echo.Context) (err error) {
 	if len(weatherResult) <= 0 || weatherResult == nil {
 		if weatherResult, err = database.GetData(db); err != nil {
@@ -128,7 +141,13 @@ func weatherService(server echo.Context) (err error) {
 	return server.JSONPretty(http.StatusOK, weatherResult, " ")
 }
 
-//dayService return the result of the weather for a specific day.
+//dayService godoc
+// @Summary return the result of the weather for a specific day.
+// @Produce json
+// @Success 200 {object} weather.DayResult{}
+// @Failure 400 
+// @Param dia query int 1 "Especific day"
+// @Router /clima [get]
 func dayService(server echo.Context) (err error) {
 	dayParam := server.QueryParam("dia")
 	day, err := strconv.Atoi(dayParam)
